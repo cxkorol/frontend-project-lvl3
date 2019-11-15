@@ -1,0 +1,51 @@
+{
+  "name": "kor-newsfeed-rss",
+  "version": "0.0.1",
+  "description": "RSS Reader",
+  "main": "index.js",
+  "scripts": {
+    "webpack-serve": "webpack-serve",
+    "babel-node": "babel-node",
+    "eslint": "eslint",
+    "build": "webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cxkorol/frontend-project-lvl3.git"
+  },
+  "keywords": [
+    "hexlet",
+    "rss",
+    "newsfeed"
+  ],
+  "author": "Andrew Kolesnikov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cxkorol/frontend-project-lvl3/issues"
+  },
+  "homepage": "https://github.com/cxkorol/frontend-project-lvl3#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-eslint": "^10.0.3",
+    "babel-loader": "7",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-flow": "^6.23.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "css-loader": "^3.2.0",
+    "eslint": "^6.6.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-flowtype": "^4.4.1",
+    "eslint-plugin-import": "^2.18.2",
+    "html-webpack-plugin": "^3.2.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  },
+  "dependencies": {
+    "bootstrap": "^4.3.1",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.16.0"
+  }
+}
