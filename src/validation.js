@@ -47,7 +47,7 @@ export default () => {
     }
   });
 
-  urlInput.addEventListener('keyup', (e) => {
+  urlInput.addEventListener('input', (e) => {
     const url = e.target.value;
     if (url === '') {
       state.urlForm.state = 'empty';
