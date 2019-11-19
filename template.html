@@ -5,19 +5,32 @@
     <title>RSS reader</title>
   </head>
   <body>
-  <div class="container-fluid">
-    <div class="jumbotron mt-3">
-      <h1 class="display-4">RSS reader</h1>
-      <hr class="my-4">
-      <form id="inputForm">
-        <div class="row">
-          <div class="col-10">
-          <input type="text" class="form-control" placeholder="type URL address">
+    <div class="container-fluid">
+      <div class="jumbotron mt-3">
+          <h1 class="display-4">RSS reader</h1>
+          <hr class="my-4">
+        <form id="inputForm">
+          <div class="row">
+            <div class="col-10">
+              <input type="text" class="form-control" placeholder="type URL address" id="addURL">
+            </div>
+          <button type="submit" class="btn btn-primary ml-2" id="submitButton" disabled>submit</button>
           </div>
-          <button type="submit" class="btn btn-primary ml-2" id="submitButton">submit</button>
+
+          <div class="invalid-feedback">
+          </div>
+          <div class="valid-feedback">
+            Sounds good!
+          </div>
+
+        </form>
+      </div>
+      <div class="col">
+        <h2 class="pt-3 pl-4">All articles:</h2>
+        <div class="rss-link-list">
+          <ul class="articles-list list-group list-group-flush"></ul>
         </div>
-      </form>
-    </div>
+      </div>
     </div>
   </body>
 </html>
