@@ -4,10 +4,13 @@ import { watch } from 'melanke-watchjs';
 import validator from 'validator';
 import axios from 'axios';
 
-const checkInput = (url) => {
+const checkInput = (url, existingLinks) => {
   if (!validator.isURL(url)) {
     return 'Not valid URL';
   }
+  if (existingLinks.find((link) => link === url)) {
+    return 'URL already exist';
+  };
   return false;
 };
 
@@ -35,6 +38,7 @@ export default () => {
       state: 'empty',
       message: '',
     },
+    links: [],
   };
 
   const formElement = document.getElementById('inputForm');
@@ -73,7 +77,7 @@ export default () => {
       state.urlForm.state = 'empty';
     }
 
-    const errUrl = checkInput(url);
+    const errUrl = checkInput(url, state.links);
     if (errUrl) {
       state.urlForm.state = 'invalid';
       state.urlForm.message = errUrl;
@@ -101,6 +105,7 @@ export default () => {
         console.log(state);
       })
       .catch((err) => console.log(err));
+    state.links = [...state.links, urlInput.value];
     urlInput.value = '';
   });
 };
