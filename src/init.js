@@ -2,6 +2,7 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import validator from 'validator';
+import axios from 'axios';
 
 const checkInput = (url) => {
   if (!validator.isURL(url)) {
@@ -10,8 +11,26 @@ const checkInput = (url) => {
   return false;
 };
 
+const parseFeed = (xml) => {
+  const channel = xml.querySelector('channel');
+  const title = channel.querySelector('title').innerHTML;
+  const description = channel.querySelector('description').innerHTML;
+  const items = channel.querySelectorAll('item');
+  const itemsList = [...items].map((item) => {
+    const itemTitle = item.querySelector('title').innerHTML;
+    const itemLink = item.querySelector('link').innerHTML;
+    return { itemTitle, itemLink };
+  });
+  return { title, description, itemsList };
+};
+
 export default () => {
   const state = {
+    feed: {
+      title: '',
+      description: '',
+      feedLinks: '',
+    },
     urlForm: {
       state: 'empty',
       message: '',
@@ -22,6 +41,7 @@ export default () => {
   const urlInput = document.getElementById('addURL');
   const invalidFeedback = formElement.querySelector('.invalid-feedback');
   const submitBtn = document.getElementById('submitButton');
+  const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
 
   watch(state, 'urlForm', () => {
     invalidFeedback.textContent = '';
@@ -60,5 +80,27 @@ export default () => {
     } else {
       state.urlForm.state = 'valid';
     }
+  });
+
+  formElement.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const link = `${crossOrigin}${urlInput.value}`;
+    axios.get(link)
+      .then((response) => {
+        const domParcer = new DOMParser();
+        const document = domParcer.parseFromString(`${response.data}`, 'application/xml');
+        console.log(document);
+        return document;
+      })
+      .then((feed) => {
+        const dataFeed = parseFeed(feed);
+        console.log(dataFeed);
+        state.feed.title = dataFeed.title;
+        state.feed.description = dataFeed.description;
+        state.feed.feedLinks = dataFeed.itemsList;
+        console.log(state);
+      })
+      .catch((err) => console.log(err));
+    urlInput.value = '';
   });
 };
