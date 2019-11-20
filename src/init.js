@@ -16,12 +16,12 @@ const checkInput = (url, existingLinks) => {
 
 const parseFeed = (xml) => {
   const channel = xml.querySelector('channel');
-  const title = channel.querySelector('title').innerHTML;
-  const description = channel.querySelector('description').innerHTML;
+  const title = channel.querySelector('title').textContent;
+  const description = channel.querySelector('description').textContent;
   const items = channel.querySelectorAll('item');
   const itemsList = [...items].map((item) => {
-    const itemTitle = item.querySelector('title').innerHTML;
-    const itemLink = item.querySelector('link').innerHTML;
+    const itemTitle = item.querySelector('title').textContent;
+    const itemLink = item.querySelector('link').textContent;
     return { itemTitle, itemLink };
   });
   return { title, description, itemsList };
@@ -93,7 +93,6 @@ export default () => {
       .then((response) => {
         const domParcer = new DOMParser();
         const document = domParcer.parseFromString(`${response.data}`, 'application/xml');
-        console.log(document);
         return document;
       })
       .then((feed) => {
@@ -107,5 +106,6 @@ export default () => {
       .catch((err) => console.log(err));
     state.links = [...state.links, urlInput.value];
     urlInput.value = '';
+    console.log(state);
   });
 };
