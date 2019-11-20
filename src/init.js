@@ -10,7 +10,7 @@ const checkInput = (url, existingLinks) => {
   }
   if (existingLinks.find((link) => link === url)) {
     return 'URL already exist';
-  };
+  }
   return false;
 };
 
