@@ -4,6 +4,7 @@ import { watch } from 'melanke-watchjs';
 import validator from 'validator';
 import axios from 'axios';
 import $ from 'jquery';
+import _ from 'lodash';
 
 const checkInput = (url, existingLinks) => {
   if (!validator.isURL(url)) {
@@ -16,7 +17,9 @@ const checkInput = (url, existingLinks) => {
 };
 
 const parseFeed = (xml) => {
-  const channel = xml.querySelector('channel');
+  const domParcer = new DOMParser();
+  const doc = domParcer.parseFromString(`${xml.data}`, 'application/xml');
+  const channel = doc.querySelector('channel');
   const title = channel.querySelector('title').textContent;
   const description = channel.querySelector('description').textContent;
   const items = channel.querySelectorAll('item');
@@ -24,7 +27,10 @@ const parseFeed = (xml) => {
     const itemTitle = item.querySelector('title').textContent;
     const itemLink = item.querySelector('link').textContent;
     const itemDescription = item.querySelector('description').textContent;
-    return { itemTitle, itemLink, itemDescription };
+    const pubDate = new Date(item.querySelector('pubDate').textContent);
+    return {
+      itemTitle, itemLink, itemDescription, pubDate,
+    };
   });
   return { title, description, itemsList };
 };
@@ -43,11 +49,24 @@ export default () => {
     links: [],
   };
 
+  const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
+
+  const updateFeeds = (feeds, latestPubDate) => {
+    axios.get(`${crossOrigin}${feeds}`)
+      .then((response) => {
+        const dataFeed = parseFeed(response);
+        const newPost = dataFeed.itemsList.filter((item) => item.pubDate > latestPubDate);
+        const newPostPubDate = _.max(newPost.map(({ pubDate }) => pubDate));
+        state.feed.articlesLinks = [...newPost, ...state.feed.articlesLinks];
+        setTimeout(() => updateFeeds(feeds, newPostPubDate), 5000);
+      })
+      .catch((err) => console.log(err));
+  };
+
   const formElement = document.getElementById('inputForm');
   const urlInput = document.getElementById('addURL');
   const invalidFeedback = formElement.querySelector('.invalid-feedback');
   const submitBtn = document.getElementById('submitButton');
-  const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
   const feeds = document.querySelector('.feeds');
   const links = document.querySelector('.links');
 
@@ -56,14 +75,16 @@ export default () => {
     feedItem.classList.add('list-group-item');
     feedItem.innerHTML = `<h4>${state.feed.title}</h4><p>${state.feed.description}</p>`;
     feeds.append(feedItem);
+  });
 
-    state.feed.articlesLinks.forEach((el) => {
-      const link = document.createElement('li');
-      link.classList.add('list-group-item');
-      link.innerHTML = `<a href="${el.itemLink}">${el.itemTitle}</a>
-      <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modal" data-title="${el.itemTitle}" data-description="${el.itemDescription}">Preview</button>`;
-      links.append(link);
-    });
+  watch(state.feed, 'articlesLinks', () => {
+    const articles = state.feed.articlesLinks.map((el) => `
+      <li class="list-group-item">
+        <a href="${el.itemLink}">${el.itemTitle}</a>
+        <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modal" data-title="${el.itemTitle}" data-description="${el.itemDescription}">Preview</button>
+      </li>
+    `).join('');
+    links.innerHTML = articles;
   });
 
   watch(state, 'urlForm', () => {
@@ -109,20 +130,17 @@ export default () => {
     e.preventDefault();
     const link = `${crossOrigin}${urlInput.value}`;
     axios.get(link)
-      .then((response) => {
-        const domParcer = new DOMParser();
-        const document = domParcer.parseFromString(`${response.data}`, 'application/xml');
-        return document;
-      })
       .then((feed) => {
         const dataFeed = parseFeed(feed);
         state.feed.title = dataFeed.title;
         state.feed.description = dataFeed.description;
-        state.feed.articlesLinks = dataFeed.itemsList;
+        state.feed.articlesLinks = [...dataFeed.itemsList, ...state.feed.articlesLinks];
+        state.links = [...state.links, urlInput.value];
+        urlInput.value = '';
+        const maxPubDate = _.max(dataFeed.itemsList.map(({ pubDate }) => pubDate));
+        setTimeout(() => updateFeeds(link, maxPubDate), 5000);
       })
-      .catch((err) => console.log(err));
-    state.links = [...state.links, urlInput.value];
-    urlInput.value = '';
+      .catch((err) => console.console.error('error', err.message));
   });
 
   $('#modal').on('show.bs.modal', (event) => {
