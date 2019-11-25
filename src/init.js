@@ -32,7 +32,7 @@ export default () => {
     feed: {
       title: '',
       description: '',
-      feedLinks: '',
+      articlesLinks: '',
     },
     urlForm: {
       state: 'empty',
@@ -46,6 +46,22 @@ export default () => {
   const invalidFeedback = formElement.querySelector('.invalid-feedback');
   const submitBtn = document.getElementById('submitButton');
   const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
+  const feeds = document.querySelector('.feeds');
+  const links = document.querySelector('.links');
+
+  watch(state.feed, 'title', () => {
+    const feedItem = document.createElement('li');
+    feedItem.classList.add('list-groupitem');
+    feedItem.innerHTML = `<h4>${state.feed.title}</h4><p>${state.feed.description}</p>`;
+    feeds.append(feedItem);
+
+    state.feed.articlesLinks.forEach((el) => {
+      const link = document.createElement('li');
+      link.classList.add('list-group-item');
+      link.innerHTML = `<a href="${el.itemLink}">${el.itemTitle}</a>`;
+      links.append(link);
+    });
+  });
 
   watch(state, 'urlForm', () => {
     invalidFeedback.textContent = '';
@@ -97,15 +113,12 @@ export default () => {
       })
       .then((feed) => {
         const dataFeed = parseFeed(feed);
-        console.log(dataFeed);
         state.feed.title = dataFeed.title;
         state.feed.description = dataFeed.description;
-        state.feed.feedLinks = dataFeed.itemsList;
-        console.log(state);
+        state.feed.articlesLinks = dataFeed.itemsList;
       })
       .catch((err) => console.log(err));
     state.links = [...state.links, urlInput.value];
     urlInput.value = '';
-    console.log(state);
   });
 };
