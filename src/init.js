@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { watch } from 'melanke-watchjs';
 import validator from 'validator';
 import axios from 'axios';
+import $ from 'jquery';
 
 const checkInput = (url, existingLinks) => {
   if (!validator.isURL(url)) {
@@ -22,7 +23,8 @@ const parseFeed = (xml) => {
   const itemsList = [...items].map((item) => {
     const itemTitle = item.querySelector('title').textContent;
     const itemLink = item.querySelector('link').textContent;
-    return { itemTitle, itemLink };
+    const itemDescription = item.querySelector('description').textContent;
+    return { itemTitle, itemLink, itemDescription };
   });
   return { title, description, itemsList };
 };
@@ -51,14 +53,15 @@ export default () => {
 
   watch(state.feed, 'title', () => {
     const feedItem = document.createElement('li');
-    feedItem.classList.add('list-groupitem');
+    feedItem.classList.add('list-group-item');
     feedItem.innerHTML = `<h4>${state.feed.title}</h4><p>${state.feed.description}</p>`;
     feeds.append(feedItem);
 
     state.feed.articlesLinks.forEach((el) => {
       const link = document.createElement('li');
       link.classList.add('list-group-item');
-      link.innerHTML = `<a href="${el.itemLink}">${el.itemTitle}</a>`;
+      link.innerHTML = `<a href="${el.itemLink}">${el.itemTitle}</a>
+      <button type="button" class="btn btn-outline-info btn-sm" data-toggle="modal" data-target="#modal" data-title="${el.itemTitle}" data-description="${el.itemDescription}">Preview</button>`;
       links.append(link);
     });
   });
@@ -120,5 +123,14 @@ export default () => {
       .catch((err) => console.log(err));
     state.links = [...state.links, urlInput.value];
     urlInput.value = '';
+  });
+
+  $('#modal').on('show.bs.modal', (event) => {
+    const button = $(event.relatedTarget);
+    const title = button.data('title');
+    const description = button.data('description');
+    const modal = $(event.currentTarget);
+    modal.find('.modal-title').text(title);
+    modal.find('.description').text(description);
   });
 };
