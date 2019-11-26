@@ -60,13 +60,14 @@ export default () => {
         state.feed.articlesLinks = [...newPost, ...state.feed.articlesLinks];
         setTimeout(() => updateFeeds(feeds, newPostPubDate), 5000);
       })
-      .catch((err) => console.log(err));
+      .catch((err) => console.error('error', err.message));
   };
 
   const formElement = document.getElementById('inputForm');
   const urlInput = document.getElementById('addURL');
   const invalidFeedback = formElement.querySelector('.invalid-feedback');
   const submitBtn = document.getElementById('submitButton');
+  const submitBtnSpinner = submitBtn.querySelector('.spinner-grow');
   const feeds = document.querySelector('.feeds');
   const links = document.querySelector('.links');
 
@@ -85,27 +86,44 @@ export default () => {
       </li>
     `).join('');
     links.innerHTML = articles;
+
+    $('#modal').on('show.bs.modal', (event) => {
+      const button = $(event.relatedTarget);
+      const title = button.data('title');
+      const description = button.data('description');
+      const modal = $(event.currentTarget);
+      modal.find('.modal-title').text(title);
+      modal.find('.description').text(description);
+    });
   });
 
   watch(state, 'urlForm', () => {
     invalidFeedback.textContent = '';
     urlInput.classList.remove('is-invalid');
     urlInput.classList.remove('is-valid');
+    submitBtnSpinner.classList.remove('d-none');
     urlInput.disabled = false;
     submitBtn.disabled = false;
 
     switch (state.urlForm.state) {
       case 'empty':
+        submitBtnSpinner.classList.add('d-none');
         submitBtn.disabled = true;
         urlInput.value = '';
         break;
       case 'invalid':
         urlInput.classList.add('is-invalid');
+        submitBtnSpinner.classList.add('d-none');
         submitBtn.disabled = true;
         invalidFeedback.textContent = state.urlForm.message;
         break;
       case 'valid':
         urlInput.classList.add('is-valid');
+        submitBtnSpinner.classList.add('d-none');
+        break;
+      case 'loading':
+        urlInput.disabled = true;
+        submitBtn.disabled = true;
         break;
       default:
     }
@@ -128,6 +146,7 @@ export default () => {
 
   formElement.addEventListener('submit', (e) => {
     e.preventDefault();
+    state.urlForm.state = 'loading';
     const link = `${crossOrigin}${urlInput.value}`;
     axios.get(link)
       .then((feed) => {
@@ -136,19 +155,13 @@ export default () => {
         state.feed.description = dataFeed.description;
         state.feed.articlesLinks = [...dataFeed.itemsList, ...state.feed.articlesLinks];
         state.links = [...state.links, urlInput.value];
-        urlInput.value = '';
+        state.urlForm.state = 'empty';
         const maxPubDate = _.max(dataFeed.itemsList.map(({ pubDate }) => pubDate));
         setTimeout(() => updateFeeds(link, maxPubDate), 5000);
       })
-      .catch((err) => console.console.error('error', err.message));
-  });
-
-  $('#modal').on('show.bs.modal', (event) => {
-    const button = $(event.relatedTarget);
-    const title = button.data('title');
-    const description = button.data('description');
-    const modal = $(event.currentTarget);
-    modal.find('.modal-title').text(title);
-    modal.find('.description').text(description);
+      .catch(() => {
+        state.urlForm.state = 'invalid';
+        state.urlForm.message = 'Something went wrong';
+      });
   });
 };
