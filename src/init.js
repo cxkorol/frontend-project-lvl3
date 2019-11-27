@@ -70,8 +70,13 @@ export default () => {
   const submitBtnSpinner = submitBtn.querySelector('.spinner-grow');
   const feeds = document.querySelector('.feeds');
   const links = document.querySelector('.links');
+  const content = document.querySelector('.content');
 
   watch(state.feed, 'title', () => {
+    if (state.links.length > 0) {
+      content.classList.remove('d-none');
+    }
+
     const feedItem = document.createElement('li');
     feedItem.classList.add('list-group-item');
     feedItem.innerHTML = `<h4>${state.feed.title}</h4><p>${state.feed.description}</p>`;
