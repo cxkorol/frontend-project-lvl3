@@ -40,7 +40,7 @@ export default () => {
     feed: {
       title: '',
       description: '',
-      articlesLinks: '',
+      articlesLinks: [],
     },
     urlForm: {
       state: 'empty',
@@ -50,6 +50,7 @@ export default () => {
   };
 
   const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
+  const proxyURL = (url) => `${crossOrigin}${url}`;
 
   const updateFeeds = (feeds, latestPubDate) => {
     axios.get(`${crossOrigin}${feeds}`)
@@ -152,7 +153,7 @@ export default () => {
   formElement.addEventListener('submit', (e) => {
     e.preventDefault();
     state.urlForm.state = 'loading';
-    const link = `${crossOrigin}${urlInput.value}`;
+    const link = proxyURL(urlInput.value);
     axios.get(link)
       .then((feed) => {
         const dataFeed = parseFeed(feed);
