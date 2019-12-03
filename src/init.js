@@ -5,16 +5,7 @@ import validator from 'validator';
 import axios from 'axios';
 import $ from 'jquery';
 import _ from 'lodash';
-
-const checkInput = (url, existingLinks) => {
-  if (!validator.isURL(url)) {
-    return 'Not valid URL';
-  }
-  if (existingLinks.find((link) => link === url)) {
-    return 'URL already exist';
-  }
-  return false;
-};
+import i18next from 'i18next';
 
 const parseFeed = (xml) => {
   const domParcer = new DOMParser();
@@ -47,6 +38,30 @@ export default () => {
       message: '',
     },
     links: [],
+  };
+
+  i18next.init({
+    lng: 'en',
+    debug: true,
+    resources: {
+      en: {
+        translation: {
+          dublicate: 'URL already exist',
+          invalid: 'Not valid URL',
+          error: 'Something went wrong',
+        },
+      },
+    },
+  });
+
+  const checkInput = (url, existingLinks) => {
+    if (!validator.isURL(url)) {
+      return i18next.t('invalid');
+    }
+    if (existingLinks.find((link) => link === url)) {
+      return i18next.t('dublicate');
+    }
+    return false;
   };
 
   const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
@@ -167,7 +182,7 @@ export default () => {
       })
       .catch(() => {
         state.urlForm.state = 'invalid';
-        state.urlForm.message = 'Something went wrong';
+        state.urlForm.message = i18next.t('invalid');;
       });
   });
 };
