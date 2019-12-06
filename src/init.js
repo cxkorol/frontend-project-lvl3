@@ -65,7 +65,7 @@ export default () => {
   };
 
   const crossOrigin = 'http://cors-anywhere.herokuapp.com/';
-  const proxyURL = (url) => `${crossOrigin}${url}`;
+  const buildURL = (url) => `${crossOrigin}${url}`;
 
   const updateFeeds = (feeds, latestPubDate) => {
     axios.get(`${crossOrigin}${feeds}`)
@@ -168,7 +168,7 @@ export default () => {
   formElement.addEventListener('submit', (e) => {
     e.preventDefault();
     state.urlForm.state = 'loading';
-    const link = proxyURL(urlInput.value);
+    const link = buildURL(urlInput.value);
     axios.get(link)
       .then((feed) => {
         const dataFeed = parseFeed(feed);
