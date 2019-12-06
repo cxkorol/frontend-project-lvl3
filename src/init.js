@@ -5,7 +5,7 @@ import validator from 'validator';
 import axios from 'axios';
 import $ from 'jquery';
 import _ from 'lodash';
-import i18next from 'i18next';
+import i18next from './i18next';
 
 const parseFeed = (xml) => {
   const domParcer = new DOMParser();
@@ -39,20 +39,6 @@ export default () => {
     },
     links: [],
   };
-
-  i18next.init({
-    lng: 'en',
-    debug: true,
-    resources: {
-      en: {
-        translation: {
-          dublicate: 'URL already exist',
-          invalid: 'Not valid URL',
-          error: 'Something went wrong',
-        },
-      },
-    },
-  });
 
   const checkInput = (url, existingLinks) => {
     if (!validator.isURL(url)) {
