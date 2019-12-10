@@ -136,7 +136,8 @@ export default () => {
   formElement.addEventListener('submit', (e) => {
     e.preventDefault();
     state.urlForm.state = 'loading';
-    const link = buildURL(urlInput.value);
+    const formData = new FormData(e.target);
+    const link = buildURL(formData.get('url'));
     axios.get(link)
       .then((feed) => {
         const dataFeed = parseFeed(feed);
