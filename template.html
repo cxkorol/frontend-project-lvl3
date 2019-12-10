@@ -1,35 +1,47 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
     <title>RSS reader</title>
   </head>
   <body>
     <div class="container-fluid">
       <div class="jumbotron mt-3">
         <h1 class="display-4">RSS reader</h1>
-        <hr class="my-4">
+        <hr class="my-4" />
         <form id="inputForm" novalidate>
           <div class="row">
             <div class="col-10">
-              <input type="text" class="form-control" placeholder="type URL address" id="addURL">
-            
-              <div class="invalid-feedback">
-              </div>
+              <input
+                type="text"
+                class="form-control"
+                placeholder="type URL address"
+                id="addURL"
+              />
+
+              <div class="invalid-feedback"></div>
               <div class="valid-feedback">
-                  Sounds good!
+                Sounds good!
               </div>
             </div>
 
-            <button type="submit" class="btn btn-primary ml-2" id="submitButton" disabled>
-              <span class="spinner-grow spinner-grow-sm d-none" role="status" aria-hidden="true"></span>
+            <button
+              type="submit"
+              class="btn btn-primary ml-2"
+              id="submitButton"
+              disabled
+            >
+              <span
+                class="spinner-grow spinner-grow-sm d-none"
+                role="status"
+                aria-hidden="true"
+              ></span>
               submit
             </button>
-
           </div>
         </form>
       </div>
-      
+
       <div class="col content d-none">
         <h2 class="pt-3 pl-4 ">All articles:</h2>
         <div class="rss-link-list">
@@ -38,12 +50,23 @@
         </div>
       </div>
 
-      <div class="modal fade" id="modal" tabindex="-1" role="dialog"  aria-hidden="true">
+      <div
+        class="modal fade"
+        id="modal"
+        tabindex="-1"
+        role="dialog"
+        aria-hidden="true"
+      >
         <div class="modal-dialog modal-lg" role="document">
           <div class="modal-content">
             <div class="modal-header">
               <h5 class="modal-title" id="exampleModalLabel">New message</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <button
+                type="button"
+                class="close"
+                data-dismiss="modal"
+                aria-label="Close"
+              >
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
@@ -51,7 +74,13 @@
               <p class="description"></p>
             </div>
             <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              <button
+                type="button"
+                class="btn btn-secondary"
+                data-dismiss="modal"
+              >
+                Close
+              </button>
             </div>
           </div>
         </div>
