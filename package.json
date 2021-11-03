@@ -54,6 +54,6 @@
     "lodash": "^4.17.19",
     "melanke-watchjs": "^1.5.0",
     "popper.js": "^1.16.0",
-    "validator": "^12.0.0"
+    "validator": "^13.7.0"
   }
 }
